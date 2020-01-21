@@ -1,0 +1,93 @@
+apiVersion: v1
+kind: DeploymentConfig
+metadata:
+  annotations:
+    kompose.cmd: C:\Users\JiriHusak\Development\kompose.exe --provider openshift --file
+      docker-compose.yml convert
+    kompose.version: 1.16.0 (0c01309)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: openldap
+  name: openldap
+spec:
+  replicas: 1
+  selector:
+    io.kompose.service: openldap
+  strategy:
+    resources: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: openldap
+    spec:
+      containers:
+      - args:
+        - --copy-service
+        env:
+        - name: KEEP_EXISTING_CONFIG
+          value: "false"
+        - name: LDAP_ADMIN_PASSWORD
+          value: admin
+        - name: LDAP_BACKEND
+          value: mdb
+        - name: LDAP_BASE_DN
+        - name: LDAP_CONFIG_PASSWORD
+          value: config
+        - name: LDAP_DOMAIN
+          value: example.org
+        - name: LDAP_LOG_LEVEL
+          value: "256"
+        - name: LDAP_ORGANISATION
+          value: Example Inc.
+        - name: LDAP_READONLY_USER
+          value: "false"
+        - name: LDAP_READONLY_USER_PASSWORD
+          value: readonly
+        - name: LDAP_READONLY_USER_USERNAME
+          value: readonly
+        - name: LDAP_REMOVE_CONFIG_AFTER_SETUP
+          value: "true"
+        - name: LDAP_REPLICATION
+          value: "false"
+        - name: LDAP_RFC2307BIS_SCHEMA
+          value: "false"
+        - name: LDAP_SSL_HELPER_PREFIX
+          value: ldap
+        - name: LDAP_TLS
+          value: "false"
+        - name: LDAP_TLS_CA_CRT_FILENAME
+          value: ca.crt
+        - name: LDAP_TLS_CIPHER_SUITE
+          value: SECURE256:-VERS-SSL3.0
+        - name: LDAP_TLS_CRT_FILENAME
+          value: ldap.crt
+        - name: LDAP_TLS_ENFORCE
+          value: "false"
+        - name: LDAP_TLS_KEY_FILENAME
+          value: ldap.key
+        - name: LDAP_TLS_PROTOCOL_MIN
+          value: "3.1"
+        - name: LDAP_TLS_VERIFY_CLIENT
+          value: demand
+        image: ' '
+        name: openldap
+        ports:
+        - containerPort: 389
+        - containerPort: 636
+        resources: {}
+        stdin: true
+        tty: true
+      restartPolicy: Always
+  test: false
+  triggers:
+  - type: ConfigChange
+  - imageChangeParams:
+      automatic: true
+      containerNames:
+      - openldap
+      from:
+        kind: ImageStreamTag
+        name: openldap:latest
+    type: ImageChange
+status: {}

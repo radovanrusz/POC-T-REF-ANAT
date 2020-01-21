@@ -1,0 +1,147 @@
+kind: List
+apiVersion: v1
+metadata: {}
+items:
+- apiVersion: v1
+  kind: Template
+  metadata:
+    name: openldap
+    annotations:
+      description: 1 pod Open LDAP
+      tags: Open LDAP
+    labels:
+      app: openldap
+  parameters:
+  - name: NAME
+    description: Name prefix for each object created
+    required: true
+    value: openldap
+  - name: IMAGE
+    description: Image 
+    required: true
+    #value: osixiaXXXXX/openldap:latest
+    value: docker.io/jhusak/anatldap
+  objects:
+
+###IMAGE STREAM 
+#  - apiVersion: v1
+#    kind: ImageStream
+#    metadata:
+#      creationTimestamp: null
+#      labels:
+#        app: openldap
+#      name: openldap
+#    spec:
+#      tags:
+#      - annotations: null
+#        from:
+#          kind: DockerImage
+#    #      name: osixiaXXXXX/openldap:latest
+#          name: docker.io/jhusak/anatldap
+#        name: latest
+
+## DEPLOYMENT CONFIG
+  - apiVersion: v1
+    kind: DeploymentConfig
+    metadata:
+      name: ${NAME}
+      labels:
+        app: openldap
+    spec:
+      replicas: 1
+      selector:
+        deploymentconfig: ${NAME}
+      template:
+        metadata:
+          creationTimestamp: null
+          labels:
+            deploymentconfig: ${NAME}
+            app: openldap
+        spec:
+          hostname: ${NAME}
+          containers:
+          - name: openldap
+            image: ${IMAGE}
+            args:
+            - --copy-service
+            env:
+            - name: KEEP_EXISTING_CONFIG
+              value: "false"
+            - name: LDAP_ADMIN_PASSWORD
+              value: admin
+            - name: LDAP_BACKEND
+              value: mdb
+            - name: LDAP_BASE_DN
+            - name: LDAP_CONFIG_PASSWORD
+              value: config
+            - name: LDAP_DOMAIN
+              value: example.org
+            - name: LDAP_LOG_LEVEL
+              value: "256"
+            - name: LDAP_ORGANISATION
+              value: Example Inc.
+            - name: LDAP_READONLY_USER
+              value: "false"
+            - name: LDAP_READONLY_USER_PASSWORD
+              value: readonly
+            - name: LDAP_READONLY_USER_USERNAME
+              value: readonly
+            - name: LDAP_REMOVE_CONFIG_AFTER_SETUP
+              value: "true"
+            - name: LDAP_REPLICATION
+              value: "false"
+            - name: LDAP_RFC2307BIS_SCHEMA
+              value: "false"
+            - name: LDAP_SSL_HELPER_PREFIX
+              value: ldap
+            - name: LDAP_TLS
+              value: "false"
+            - name: LDAP_TLS_CA_CRT_FILENAME
+              value: ca.crt
+            - name: LDAP_TLS_CIPHER_SUITE
+              value: SECURE256:-VERS-SSL3.0
+            - name: LDAP_TLS_CRT_FILENAME
+              value: ldap.crt
+            - name: LDAP_TLS_ENFORCE
+              value: "false"
+            - name: LDAP_TLS_KEY_FILENAME
+              value: ldap.key
+            - name: LDAP_TLS_PROTOCOL_MIN
+              value: "3.1"
+            - name: LDAP_TLS_VERIFY_CLIENT
+              value: demand
+            ports:
+            - containerPort: 389
+            - containerPort: 636
+            stdin: true
+            tty: true
+        restartPolicy: Always
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - openldap
+        from:
+          kind: ImageStreamTag
+          name: openldap:latest
+      type: ImageChange
+  
+## SERVICE
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      labels:
+        app: openldap
+      name: ${NAME}
+    spec:
+      ports:
+      - name: "8389"
+        port: 8389
+        targetPort: 389
+      - name: "8636"
+        port: 8636
+        targetPort: 636  
+      selector:
+        deploymentconfig: ${NAME}

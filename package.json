@@ -1,0 +1,30 @@
+{
+  "name": "aa_svc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "docker": "env-cmd -f ./config/docker.env node src/index.js",
+    "dev": "env-cmd -f ./config/dev.env nodemon src/index.js",
+    "pretest": "eslint --ignore-path .gitignore .",
+    "test": "env-cmd  -f ./config/test.env jest --watch --runInBand"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "promised-ldap": "^0.3.0",
+    "supertest": "^4.0.2"
+  },
+  "devDependencies": {
+    "env-cmd": "^10.0.1",
+    "eslint": "^6.6.0",
+    "jest": "^24.9.0"
+  }
+}
