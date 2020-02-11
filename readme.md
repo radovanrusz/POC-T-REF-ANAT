@@ -14,7 +14,7 @@ Implementation requires Nodejs and Docker.
 
 * Clone repository.
 * Run npm install (to get all dependencies).
-* Run docker-componse up --force-recreate (to create and start containers).
+* Run docker-compose up --force-recreate (to create and start containers).
 
 #### Running in dev/test mode
 

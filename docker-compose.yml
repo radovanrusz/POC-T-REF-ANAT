@@ -1,11 +1,11 @@
 version: "3"
 services:
   app:
-    container_name: express-authservice
+    container_name: anat-service
     restart: on-failure
     build: ./
     ports:
-      - "8080:80"
+      - "3002:3002"
     volumes:
       - .:/app
     command: npm run docker
@@ -69,3 +69,7 @@ services:
 #  data-openldap-database:
 #  data-openldap-config:
 #  data-openldap-certs:
+networks:
+  default:
+    external:
+      name: micro_poc
